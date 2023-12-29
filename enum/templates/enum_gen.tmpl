@@ -1,0 +1,16 @@
+package {{ .PackageName }}
+
+{{ range .EnumData }}
+type {{ .EnumIface }} interface {
+	__private()
+
+	Value() {{ .EnumTypeValueReturn }}
+}
+
+func (c {{ .EnumName }}) __private() {}
+
+func (c {{ .EnumName }}) Value() {{ .EnumTypeValueReturn }} {
+	return {{ .EnumTypeValueReturn }}(c)
+}
+
+{{ end }}

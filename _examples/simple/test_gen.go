@@ -1,0 +1,28 @@
+package main
+
+
+type Color interface {
+	__private()
+
+	Value() string
+}
+
+func (c color) __private() {}
+
+func (c color) Value() string {
+	return string(c)
+}
+
+
+type Car interface {
+	__private()
+
+	Value() int
+}
+
+func (c car) __private() {}
+
+func (c car) Value() int {
+	return int(c)
+}
+
