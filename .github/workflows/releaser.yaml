@@ -21,7 +21,20 @@ on:
           - patch
 
 jobs:
+  releaser:
+    needs:
+      - create-tag-and-release
+    uses: slsa-framework/slsa-github-generator/.github/workflows/builder_go_slsa3.yml@v1.9.0
+    with:
+      go-version: 1.21
+      evaluated-envs: NEW_VERSION="${{ steps.new_version.outputs.NEW_VERSION }}"
+
   create-tag-and-release:
+    permissions:
+      id-token: write # To sign the provenance.
+      contents: write # To upload assets to release.
+      actions: read # To read the workflow path.
+
     runs-on: ubuntu-latest
 
     steps:
@@ -66,9 +79,3 @@ jobs:
           git config user.name "${{ secrets.BOT_NAME }}"
           git tag -a "${{ steps.new_version.outputs.NEW_VERSION }}" -m "${{ github.event.inputs.tag_version_message }}"
           git push origin "${{ steps.new_version.outputs.NEW_VERSION }}"
-
-      - name: Releaser
-        uses: slsa-framework/slsa-github-generator/.github/workflows/builder_go_slsa3.yml@v1.9.0
-        with:
-          go-version: 1.21
-          evaluated-envs: NEW_VERSION="${{ steps.new_version.outputs.NEW_VERSION }}"
