@@ -60,6 +60,7 @@ jobs:
           if [ "$latest_tag" == "$( git rev-parse HEAD )" ]; then
             latest_tag="0.0.1"
           fi
+          echo $latest_tag
           echo "LATEST_TAG=$latest_tag" >> $GITHUB_OUTPUT
 
       - name: Determine New Version
