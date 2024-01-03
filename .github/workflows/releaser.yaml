@@ -26,12 +26,12 @@ jobs:
 
     steps:
 
+      - uses: actions/checkout@v4
+
       - name: Fetch tags
-        uses: actions/checkout@v4
         run: git fetch --tags
 
       - name: Get latest tag
-        uses: actions/checkout@v4
         id: latest_tag
         run: |
           latest_tag=$(git describe --tags $(git rev-list --tags --max-count=1))
