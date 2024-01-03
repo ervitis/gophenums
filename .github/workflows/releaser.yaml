@@ -46,8 +46,6 @@ jobs:
     outputs:
       latest_tag: steps.latest_tag.outputs.LATEST_TAG
       new_version: steps.new_version.outputs.NEW_VERSION
-    env:
-      version: ${{ steps.latest_tag.outputs.LATEST_TAG }}
 
     steps:
 
