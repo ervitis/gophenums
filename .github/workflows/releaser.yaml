@@ -6,7 +6,7 @@ permissions:
 on:
   workflow_dispatch:
     inputs:
-      tag_version:
+      tag_version_message:
         description: 'Enter a description'
         required: true
         type: string
@@ -29,6 +29,11 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 1
+
+      - name: Config github
+        run: |
+          git config user-email "${{ secrets.GITHUB_BOT_EMAIL }}"
+          git config user.name "${{ secrets.GITHUB_BOT_NAME }}"
 
       - name: Get latest tag
         id: latest_tag
@@ -62,7 +67,7 @@ jobs:
 
       - name: Create Tag
         run: |
-          git tag -a "${{ steps.new_version.outputs.NEW_VERSION }}" -m "Version ${{ steps.new_version.outputs.NEW_VERSION }}"
+          git tag -a "${{ steps.new_version.outputs.NEW_VERSION }}" -m "${{ github.event.inputs.tag_version_message }}"
           git push origin "${{ steps.new_version.outputs.NEW_VERSION }}"
 
       - name: GoReleaser
