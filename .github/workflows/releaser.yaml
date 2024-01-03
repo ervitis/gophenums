@@ -27,15 +27,15 @@ jobs:
     steps:
 
       - uses: actions/checkout@v4
-
-      - name: Fetch tags
-        run: git fetch --tags
+        with:
+          fetch-depth: 1
 
       - name: Get latest tag
         id: latest_tag
         run: |
-          latest_tag=$(git describe --tags $(git rev-list --tags --max-count=1))
-          if [ -z "$latest_tag" ]; then
+          git fetch --tags
+          latest_tag=$( git describe --tags --abbrev=0 --always)
+          if [ "$latest_tag" == "$(git rev-parse HEAD)" ]; then
             latest_tag="0.0.1"
           fi
           echo "LATEST_TAG=$latest_tag" >> $GITHUB_OUTPUT
