@@ -32,7 +32,7 @@ jobs:
 
       - name: Config github
         run: |
-          git config user-email "${{ secrets.GITHUB_BOT_EMAIL }}"
+          git config user.email "${{ secrets.GITHUB_BOT_EMAIL }}"
           git config user.name "${{ secrets.GITHUB_BOT_NAME }}"
 
       - name: Get latest tag
