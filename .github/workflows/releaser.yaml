@@ -33,7 +33,7 @@ jobs:
     with:
       go-version: 1.21
       config-file: .slsa-goreleaser.yml
-      evaluated-envs: "VERSION: ${{ needs.jobs.create-tag-and-release.outputs.new_version }}"
+      evaluated-envs: "VERSION: ${{ needs.jobs.create-tag-and-release.outputs.NEW_VERSION }}"
 
   create-tag-and-release:
     permissions:
