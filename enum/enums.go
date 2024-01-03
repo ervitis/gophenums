@@ -12,15 +12,18 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"runtime"
 	"strings"
+
+	"github.com/ervitis/gotransactions"
 )
 
 const generateComment = "gophenum:generate"
 const templateFile = "enum_gen.tmpl"
 
 var templateFilePath = func() string {
-	absPath, _ := filepath.Abs(".")
-	return path.Join(absPath, "enum", "templates", templateFile)
+	_, b, _, _ := runtime.Caller(0)
+	return path.Join(filepath.Dir(b), "..", "enum", "templates", templateFile)
 }
 
 // path -> []constant
@@ -115,6 +118,7 @@ func (e *generate) search() error {
 
 func (e *generate) retrieveTypes() error {
 	fset := token.NewFileSet()
+	var commentsAssociated []string
 	for fi := range e.pathsWithConsts {
 		var found bool
 		var data constant
@@ -139,14 +143,19 @@ func (e *generate) retrieveTypes() error {
 					if tSpec, ok := exp.Specs[0].(*ast.TypeSpec); ok {
 						data.t = tSpec.Name.Name
 						found = true
+						commentsAssociated = append(commentsAssociated, tSpec.Name.Name)
 					}
 				}
 			case *ast.TypeSpec:
-				if found {
-					if exp.Name.Obj.Decl != nil {
-						if tSpec, ok := exp.Name.Obj.Decl.(*ast.TypeSpec); ok {
-							data.v = fmt.Sprintf("%v", tSpec.Type)
-							e.pathsWithConsts[fi] = append(e.pathsWithConsts[fi], data)
+				if found &&
+					exp.Name.Obj.Decl != nil {
+					if tSpec, ok := exp.Name.Obj.Decl.(*ast.TypeSpec); ok {
+						for _, eType := range commentsAssociated {
+							if eType == tSpec.Name.Name {
+								t := fmt.Sprintf("%v", tSpec.Type)
+								data.v = t
+								e.pathsWithConsts[fi] = append(e.pathsWithConsts[fi], data)
+							}
 						}
 					}
 				}
@@ -162,37 +171,46 @@ func (e *generate) generateFromTemplate() error {
 	if err != nil {
 		return fmt.Errorf("generateFromTemplate: generating template using file %s: %w", templateFilePath(), err)
 	}
+
 	for pathConstant, consts := range e.pathsWithConsts {
 		if len(consts) == 0 {
 			continue
 		}
 		generatedFile := pathConstant[:len(pathConstant)-3] + "_gen.go"
 		e.deleteGeneratedFile(generatedFile)
-		eData := make([]enumData, 0)
-		for i := range consts {
-			eData = append(eData, enumData{
-				EnumIface:           consts[i].Capitalize(),
-				EnumName:            consts[i].Value(),
-				EnumTypeValueReturn: consts[i].TypeReturnValue(),
-			})
-		}
-		templateData := data{
-			PackageName: consts.GetPackageName(),
-			EnumData:    eData,
-		}
+		tx := gotransactions.New(
+			func() error {
+				eData := make([]enumData, 0)
+				for i := range consts {
+					eData = append(eData, enumData{
+						EnumIface:           consts[i].Capitalize(),
+						EnumName:            consts[i].Value(),
+						EnumTypeValueReturn: consts[i].TypeReturnValue(),
+					})
+				}
+				templateData := data{
+					PackageName: consts.GetPackageName(),
+					EnumData:    eData,
+				}
 
-		f, err := os.Create(generatedFile)
-		if err != nil {
-			return fmt.Errorf("generateFromTemplate: creating gen file: %w", err)
-		}
-		if err := tmpl.Execute(f, templateData); err != nil {
-			e.deleteGeneratedFile(generatedFile)
-			_ = f.Close()
-			return fmt.Errorf("generateFromTemplate: executing with template: %w", err)
-		}
-		_ = f.Close()
+				f, err := os.Create(generatedFile)
+				if err != nil {
+					return fmt.Errorf("generateFromTemplate: creating gen file: %w", err)
+				}
+				if err := tmpl.Execute(f, templateData); err != nil {
+					e.deleteGeneratedFile(generatedFile)
+					_ = f.Close()
+					return fmt.Errorf("generateFromTemplate: executing with template: %w", err)
+				}
+				return f.Close()
+			},
+			func() error {
+				e.deleteGeneratedFile(generatedFile)
+				return nil
+			},
+		)
+		return tx.ExecuteTransaction()
 	}
-
 	return nil
 }
 
