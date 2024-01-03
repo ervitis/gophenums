@@ -25,12 +25,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Set up Git
-        run: |
-          git config user.email "actions@github.com"
-          git config user.name "GitHub Actions"
 
       - name: Fetch tags
+        uses: actions/checkout@v4
         run: git fetch --tags
 
       - name: Get latest tag
