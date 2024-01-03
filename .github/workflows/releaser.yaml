@@ -55,7 +55,7 @@ jobs:
         id: latest_tag
         run: |
           git fetch --tags
-          latest_tag=$(git describe --tags --abbrev=0)
+          latest_tag=$(git tag --sort=-creatordate | head -n 1)
           echo "LATEST_TAG=$latest_tag" >> $GITHUB_OUTPUT
 
       - name: Determine New Version
@@ -63,20 +63,20 @@ jobs:
         run: |
           case ${{ github.event.inputs.release_type }} in
           major)
-           NEW_VERSION=$(echo "${{ steps.latest_tag.outputs.LATEST_TAG }}" | awk -F. '{printf "v%d.%d.%d\n", $1+1, 0, 0}')
+           new_version=$(echo "${{ steps.latest_tag.outputs.LATEST_TAG }}" | awk -F. '{printf "v%d.%d.%d\n", $1+1, 0, 0}')
            ;;
           minor)
-           NEW_VERSION=$(echo "${{ steps.latest_tag.outputs.LATEST_TAG }}" | awk -F. '{printf "v%d.%d.%d\n", $1, $2+1, 0}')
+           new_version=$(echo "${{ steps.latest_tag.outputs.LATEST_TAG }}" | awk -F. '{printf "v%d.%d.%d\n", $1, $2+1, 0}')
            ;;
           patch)
-           NEW_VERSION=$(echo "${{ steps.latest_tag.outputs.LATEST_TAG }}" | awk -F. '{printf "v%d.%d.%d\n", $1, $2, $3+1}')
+           new_version=$(echo "${{ steps.latest_tag.outputs.LATEST_TAG }}" | awk -F. '{printf "v%d.%d.%d\n", $1, $2, $3+1}')
            ;;
           *)
            echo "Invalid release type specified."
            exit 1
            ;;
           esac
-          echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_OUTPUT
+          echo "NEW_VERSION=$new_version" >> $GITHUB_OUTPUT
 
       - name: Create Tag
         run: |
