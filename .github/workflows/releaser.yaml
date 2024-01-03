@@ -42,6 +42,10 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    outputs:
+      LATEST_TAG: steps.latest_tag.outputs.LATEST_TAG
+      NEW_VERSION: steps.new_version.outputs.NEW_VERSION
+
     steps:
 
       - uses: actions/checkout@v4
