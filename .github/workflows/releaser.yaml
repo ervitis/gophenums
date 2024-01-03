@@ -30,11 +30,6 @@ jobs:
         with:
           fetch-depth: 1
 
-      - name: Config github
-        run: |
-          git config user.email "${{ secrets.GITHUB_BOT_EMAIL }}"
-          git config user.name "${{ secrets.GITHUB_BOT_NAME }}"
-
       - name: Get latest tag
         id: latest_tag
         run: |
@@ -67,6 +62,8 @@ jobs:
 
       - name: Create Tag
         run: |
+          git config user.email "${{ secrets.GITHUB_BOT_EMAIL }}"
+          git config user.name "${{ secrets.GITHUB_BOT_NAME }}"
           git tag -a "${{ steps.new_version.outputs.NEW_VERSION }}" -m "${{ github.event.inputs.tag_version_message }}"
           git push origin "${{ steps.new_version.outputs.NEW_VERSION }}"
 
