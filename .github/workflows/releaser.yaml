@@ -67,20 +67,21 @@ jobs:
         run: |
           case ${{ github.event.inputs.release_type }} in
           major)
-           new_version=$(echo "${{ steps.latest_tag.outputs.LATEST_TAG }}" | awk -F. '{printf "%d.%d.%d\n", $1+1, 0, 0}')
+           NEW_VERSION=$(echo "${{ steps.latest_tag.outputs.LATEST_TAG }}" | awk -F. '{printf "%d.%d.%d\n", $1+1, 0, 0}')
            ;;
           minor)
-           new_version=$(echo "${{ steps.latest_tag.outputs.LATEST_TAG }}" | awk -F. '{printf "%d.%d.%d\n", $1, $2+1, 0}')
+           NEW_VERSION=$(echo "${{ steps.latest_tag.outputs.LATEST_TAG }}" | awk -F. '{printf "%d.%d.%d\n", $1, $2+1, 0}')
            ;;
           patch)
-           new_version=$(echo "${{ steps.latest_tag.outputs.LATEST_TAG }}" | awk -F. '{printf "%d.%d.%d\n", $1, $2, $3+1}')
+           NEW_VERSION=$(echo "${{ steps.latest_tag.outputs.LATEST_TAG }}" | awk -F. '{printf "%d.%d.%d\n", $1, $2, $3+1}')
            ;;
           *)
            echo "Invalid release type specified."
            exit 1
            ;;
           esac
-          echo "NEW_VERSION=$new_version" >> $GITHUB_OUTPUT
+          echo $NEW_VERSION
+          echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_OUTPUT
 
       - name: Create Tag
         run: |
