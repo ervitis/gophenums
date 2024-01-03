@@ -3,7 +3,10 @@ name: ci
 on:
   push:
     branches:
-      - '*'
+      - 'master'
+      - 'feat/*'
+      - 'feature/*'
+      - 'bug/*'
 
 jobs:
   build:
