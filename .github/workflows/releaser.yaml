@@ -67,12 +67,8 @@ jobs:
           git tag -a "${{ steps.new_version.outputs.NEW_VERSION }}" -m "${{ github.event.inputs.tag_version_message }}"
           git push origin "${{ steps.new_version.outputs.NEW_VERSION }}"
 
-      - name: GoReleaser
-        uses: goreleaser/goreleaser-action@v5
+      - name: Releaser
+        uses: slsa-framework/slsa-github-generator/.github/workflows/builder_go_slsa3.yml@v1.9.0
         with:
-          args: release --rm-dist --clean
-          version: latest
-          distribution: goreleaser
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NEW_VERSION: ${{ steps.new_version.outputs.NEW_VERSION }}
+          go-version: 1.21
+          evaluated-envs: NEW_VERSION="${{ steps.new_version.outputs.NEW_VERSION }}"
