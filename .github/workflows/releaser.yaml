@@ -1,0 +1,76 @@
+name: Manual Release
+
+permissions:
+  contents: write
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag_version:
+        description: 'Enter a description'
+        required: true
+      release_type:
+        description: 'Select the release type'
+        required: true
+        default: 'patch'
+        options:
+          - major
+          - minor
+          - patch
+
+jobs:
+  create-tag-and-release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set up Git
+        run: |
+          git config user.email "actions@github.com"
+          git config user.name "GitHub Actions"
+
+      - name: Fetch tags
+        run: git fetch --tags
+
+      - name: Get latest tag
+        id: latest_tag
+        run: |
+          latest_tag=$(git describe --tags $(git rev-list --tags --max-count=1))
+          if [ -z "$latest_tag" ]; then
+            latest_tag="0.0.1"
+          fi
+          echo "LATEST_TAG=$latest_tag" >> $GITHUB_OUTPUT
+
+      - name: Determine New Version
+        id: new_version
+        run: |
+          case ${{ github.event.inputs.release_type }} in
+          major)
+           new_version=$(echo "${{ steps.latest_tag.outputs.LATEST_TAG }}" | awk -F. '{printf "%d.%d.%d\n", $1+1, 0, 0}')
+           ;;
+          minor)
+           new_version=$(echo "${{ steps.latest_tag.outputs.LATEST_TAG }}" | awk -F. '{printf "%d.%d.%d\n", $1, $2+1, 0}')
+           ;;
+          patch)
+           new_version=$(echo "${{ steps.latest_tag.outputs.LATEST_TAG }}" | awk -F. '{printf "%d.%d.%d\n", $1, $2, $3+1}')
+           ;;
+          *)
+           echo "Invalid release type specified."
+           exit 1
+           ;;
+          esac
+          echo "NEW_VERSION=$new_version" >> $GITHUB_OUTPUT
+
+      - name: Create Tag
+        run: |
+          git tag -a "${{ steps.new_version.outputs.NEW_VERSION }}" -m "Version ${{ steps.new_version.outputs.NEW_VERSION }}"
+          git push origin "${{ steps.new_version.outputs.NEW_VERSION }}"
+
+      - name: GoReleaser
+        uses: goreleaser/goreleaser-action@v5
+        with:
+          args: release --rm-dist --clean
+          version: latest
+          distribution: goreleaser
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NEW_VERSION: ${{ steps.new_version.outputs.NEW_VERSION }}

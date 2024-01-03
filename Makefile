@@ -1,4 +1,4 @@
-.PHONY: tests build format
+.PHONY: tests build format install
 
 help: ## Show this help
 	@echo "Help"
@@ -15,3 +15,6 @@ build: ## Build the application
 
 format: ## Format files
 	go fmt ./...
+
+install: ## Install dependencies
+	go mod tidy
