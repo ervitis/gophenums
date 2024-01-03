@@ -21,13 +21,19 @@ on:
           - patch
 
 jobs:
+  checkout:
+    uses: actions/checkout@v4
+    with:
+      fetch-depth: 1
+
   releaser:
     needs:
       - create-tag-and-release
+      - checkout
     uses: slsa-framework/slsa-github-generator/.github/workflows/builder_go_slsa3.yml@v1.9.0
     with:
       go-version: 1.21
-      evaluated-envs: NEW_VERSION="${{ steps.new_version.outputs.NEW_VERSION }}"
+      evaluated-envs: NEW_VERSION="$( git describe --tags --abbrev=0 --always )"
 
   create-tag-and-release:
     permissions:
@@ -48,7 +54,7 @@ jobs:
         run: |
           git fetch --tags
           latest_tag=$( git describe --tags --abbrev=0 --always)
-          if [ "$latest_tag" == "$(git rev-parse HEAD)" ]; then
+          if [ "$latest_tag" == "$( git rev-parse HEAD )" ]; then
             latest_tag="0.0.1"
           fi
           echo "LATEST_TAG=$latest_tag" >> $GITHUB_OUTPUT
