@@ -31,7 +31,7 @@ main: ./cmd/main.go
 # Binary output name.
 # {{ .Os }} will be replaced by goos field in the config file.
 # {{ .Arch }} will be replaced by goarch field in the config file.
-binary: gophenums-{{ .Os }}-{{ .Arch }}-{{ .Env.NEW_VERSION }}
+binary: gophenums-{{ .Os }}-{{ .Arch }}
 
 ldflags:
   - "-s -w"
