@@ -9,8 +9,10 @@ on:
       tag_version:
         description: 'Enter a description'
         required: true
+        type: string
       release_type:
         description: 'Select the release type'
+        type: choice
         required: true
         default: 'patch'
         options:
