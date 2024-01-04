@@ -46,10 +46,6 @@ jobs:
       LATEST_TAG: steps.set-tag.outputs.LATEST_TAG
       NEW_VERSION: steps.create-version.outputs.NEW_VERSION
 
-    env:
-      LATEST_TAG: ${{ steps.set-tag.outputs.LATEST_TAG }}
-      NEW_VERSION: ${{ steps.create-version.outputs.NEW_VERSION }}
-
     steps:
 
       - uses: actions/checkout@v4
