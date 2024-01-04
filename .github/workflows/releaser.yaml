@@ -92,6 +92,7 @@ jobs:
           git tag -a "${{ steps.create-version.outputs.NEW_VERSION }}" -m "${{ github.event.inputs.tag_version_message }}"
           git push origin "${{ steps.create-version.outputs.NEW_VERSION }}"
           echo ${GITHUB_OUTPUT}
+          cat ${GITHUB_OUTPUT}
 
   test:
     needs: create-tag
