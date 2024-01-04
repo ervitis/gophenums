@@ -65,9 +65,8 @@ jobs:
         run: |
           git fetch --tags
           LATEST_TAG=$(git tag --sort=-creatordate | head -n 1)
-          echo $LATEST_TAG
+          echo "my: "$LATEST_TAG
           echo "LATEST_TAG=$LATEST_TAG" >> $GITHUB_OUTPUT
-          echo "LATEST_TAG=$LATEST_TAG" >> $GITHUB_ENV
 
       - name: Determine New Version
         id: create-version
@@ -89,9 +88,8 @@ jobs:
            exit 1
            ;;
           esac
-          echo $NEW_VERSION
+          echo "v: "$NEW_VERSION
           echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_OUTPUT
-          echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
 
       - name: Create Tag
         run: |
