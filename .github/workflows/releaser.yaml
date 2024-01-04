@@ -22,7 +22,7 @@ on:
 
 
 env:
-  LATEST_TAG: "wtf"
+  LATEST_TAG: ""
   NEW_VERSION: ""
 
 
@@ -60,6 +60,8 @@ jobs:
 
       - name: Get latest tag
         id: set-tag
+        env:
+          LATEST_TAG: ${{ steps.set-tag.outputs.LATEST_TAG }}
         run: |
           git fetch --tags
           LATEST_TAG=$(git tag --sort=-creatordate | head -n 1)
@@ -69,6 +71,8 @@ jobs:
 
       - name: Determine New Version
         id: create-version
+        env:
+          NEW_VERSION: ${{ steps.create-version.outputs.NEW_VERSION }}
         run: |
           case ${{ github.event.inputs.release_type }} in
           major)
