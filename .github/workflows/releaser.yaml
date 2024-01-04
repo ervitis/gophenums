@@ -35,7 +35,7 @@ jobs:
       config-file: .slsa-goreleaser.yml
       evaluated-envs: "VERSION:${{needs.create-tag.outputs.new_version}}"
       upload-assets: true
-      upload-tag-name: ${{ needs.create-tag.outputs.new_version }}
+      upload-tag-name: $(echo ${{ needs.create-tag.outputs.new_version }})
 
   create-tag:
     permissions:
