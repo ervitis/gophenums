@@ -93,6 +93,7 @@ jobs:
       - name: Test me
         run: |
           MY_VERSION="${{ needs.create-tag.outputs.NEW_VERSION }}"
+          echo "my version: ${{ needs.create-tag.outputs.NEW_VERSION }}"
           echo $MY_VERSION
       - name: Test me 2
         env:
