@@ -90,7 +90,11 @@ jobs:
     needs: create-tag
     runs-on: ubuntu-latest
     steps:
+      - name: print outputs
+        shell: bash
+        run: echo ${{ needs.create-tag.outputs }}
       - name: Test me
+        shell: bash
         run: |
           MY_VERSION="${{ needs.create-tag.outputs.NEW_VERSION }}"
           echo "my version: ${{ needs.create-tag.outputs.NEW_VERSION }}"
