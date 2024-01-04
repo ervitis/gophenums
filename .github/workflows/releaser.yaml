@@ -80,6 +80,9 @@ jobs:
         arch:
           - amd64
           - arm64
+        exclude:
+          - os: linux
+            arch: arm64
     permissions:
       id-token: write # To sign the provenance.
       contents: write # To upload assets to release.
