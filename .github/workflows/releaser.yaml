@@ -28,19 +28,18 @@ jobs:
       contents: write # To upload assets to release.
       actions: read # To read the workflow path.
     needs:
-      - create-tag-and-release
+      - create-tag
     uses: slsa-framework/slsa-github-generator/.github/workflows/builder_go_slsa3.yml@v1.9.0
     with:
       go-version: 1.21
       config-file: .slsa-goreleaser.yml
-      evaluated-envs: "VERSION:${{ needs.create-tag-and-release.outputs.new_version }}"
+      evaluated-envs: "VERSION:${{needs.create-tag.outputs.new_version}}"
       upload-assets: true
+      upload-tag-name: ${{ needs.create-tag.outputs.new_version }}
 
-  create-tag-and-release:
+  create-tag:
     permissions:
-      id-token: write # To sign the provenance.
-      contents: write # To upload assets to release.
-      actions: read # To read the workflow path.
+      contents: write
 
     runs-on: ubuntu-latest
 
