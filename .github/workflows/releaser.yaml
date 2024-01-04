@@ -72,6 +72,14 @@ jobs:
           git push origin "${{ steps.create-version.outputs.new_version }}"
 
   releaser:
+    strategy:
+      matrix:
+        os:
+          - linux
+          - darwin
+        arch:
+          - amd64
+          - arm64
     permissions:
       id-token: write # To sign the provenance.
       contents: write # To upload assets to release.
@@ -80,7 +88,7 @@ jobs:
     uses: slsa-framework/slsa-github-generator/.github/workflows/builder_go_slsa3.yml@v1.8.0
     with:
       go-version: 1.21
-      config-file: .slsa-goreleaser.yml
+      config-file: .slsa-goreleaser/${{ matrix.os }}-${{ matrix.arch }}.yml
       evaluated-envs: "VERSION:${{needs.create-tag.outputs.new_version}}"
       upload-assets: true
       upload-tag-name: ${{ needs.create-tag.outputs.new_version }}
