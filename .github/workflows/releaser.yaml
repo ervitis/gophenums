@@ -32,9 +32,9 @@ jobs:
   #  with:
   #    go-version: 1.21
   #    config-file: .slsa-goreleaser.yml
-  #    evaluated-envs: "VERSION:${{needs.create-tag.outputs.new_version}}"
+  #    evaluated-envs: "VERSION:${{needs.create-tag.outputs.NEW_VERSION}}"
   #    upload-assets: true
-  #    upload-tag-name: ${{ needs.create-tag.outputs.new_version }}
+  #    upload-tag-name: ${{ needs.create-tag.outputs.NEW_VERSION }}
 
   create-tag:
     permissions:
@@ -43,8 +43,12 @@ jobs:
     runs-on: ubuntu-latest
 
     outputs:
-      latest_tag: steps.latest_tag.outputs.latest_tag
-      new_version: steps.create_version.outputs.new_version
+      LATEST_TAG: steps.set-tag.outputs.LATEST_TAG
+      NEW_VERSION: steps.create-version.outputs.NEW_VERSION
+
+    env:
+      LATEST_TAG: ${{ steps.set-tag.outputs.LATEST_TAG }}
+      NEW_VERSION: ${{ steps.create-version.outputs.NEW_VERSION }}
 
     steps:
 
@@ -53,38 +57,38 @@ jobs:
           fetch-depth: 1
 
       - name: Get latest tag
-        id: latest_tag
+        id: set-tag
         run: |
           git fetch --tags
           latest_tag=$(git tag --sort=-creatordate | head -n 1)
           echo "latest_tag=$latest_tag" >> $GITHUB_OUTPUT
 
       - name: Determine New Version
-        id: create_version
+        id: create-version
         run: |
           case ${{ github.event.inputs.release_type }} in
           major)
-           new_version=$(echo "${{ steps.latest_tag.outputs.latest_tag }}" | awk -F. '{printf "v%d.%d.%d\n", $1+1, 0, 0}')
+           NEW_VERSION=$(echo "${{ steps.set-tag.outputs.latest_tag }}" | awk -F. '{printf "v%d.%d.%d\n", $1+1, 0, 0}')
            ;;
           minor)
-           new_version=$(echo "${{ steps.latest_tag.outputs.latest_tag }}" | awk -F. '{printf "v%d.%d.%d\n", $1, $2+1, 0}')
+           NEW_VERSION=$(echo "${{ steps.set-tag.outputs.latest_tag }}" | awk -F. '{printf "v%d.%d.%d\n", $1, $2+1, 0}')
            ;;
           patch)
-           new_version=$(echo "${{ steps.latest_tag.outputs.latest_tag }}" | awk -F. '{printf "v%d.%d.%d\n", $1, $2, $3+1}')
+           NEW_VERSION=$(echo "${{ steps.set-tag.outputs.latest_tag }}" | awk -F. '{printf "v%d.%d.%d\n", $1, $2, $3+1}')
            ;;
           *)
            echo "Invalid release type specified."
            exit 1
            ;;
           esac
-          echo "new_version=$new_version" >> $GITHUB_OUTPUT
+          echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_OUTPUT
 
       - name: Create Tag
         run: |
           git config user.email "${{ secrets.BOT_EMAIL }}"
           git config user.name "${{ secrets.BOT_NAME }}"
-          git tag -a "${{ steps.create_version.outputs.new_version }}" -m "${{ github.event.inputs.tag_version_message }}"
-          git push origin "${{ steps.create_version.outputs.new_version }}"
+          git tag -a "${{ steps.create-version.outputs.NEW_VERSION }}" -m "${{ github.event.inputs.tag_version_message }}"
+          git push origin "${{ steps.create-version.outputs.NEW_VERSION }}"
 
   test:
     needs: create-tag
@@ -92,7 +96,7 @@ jobs:
     steps:
       - name: Test me
         run: |
-          MY_VERSION=$(echo "${{ needs.create-tag.outputs.new_version }}")
+          MY_VERSION=$(echo "${{ needs.create-tag.outputs.NEW_VERSION }}")
           echo $MY_VERSION
       - name: Test me 2
         env:
