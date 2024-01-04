@@ -66,7 +66,7 @@ jobs:
       - name: Determine New Version
         id: create-version
         env:
-          NEW_VERSION: ${{ steps.create-version.outputs.NEW_VERSION }}
+          NEW_VERSION: ${{ steps.create-version.outputs.new_version }}
         run: |
           case ${{ github.event.inputs.release_type }} in
           major)
@@ -101,17 +101,20 @@ jobs:
     steps:
       - name: print outputs
         shell: bash
-        run: echo ${{ needs.create-tag.outputs['NEW_VERSION'] }}
+        run: echo ${{ needs.create-version.outputs['new_version'] }}
       - name: Test me
         shell: bash
+        env:
+          VER: ${{ needs.create-version.outputs.new_version }}
         run: |
           MY_VERSION="${{ needs.create-tag.outputs.NEW_VERSION }}"
           echo "my version: ${{ needs.create-tag.outputs.NEW_VERSION }}"
           echo "${{ env.NEW_VERSION }}"
           echo $MY_VERSION
+          echo "ver: "${{ env.VER }}
       - name: Test me 2
         env:
-          MY_TAG: ${{ needs.create-tag.outputs.LATEST_TAG }}
+          MY_TAG: ${{ needs.create-tag.outputs.latest_tag }}
         run: |
           echo "LATEST_TAG:$(echo '${{ needs.create-tag.outputs.latest_tag }}') and env:${{ env.MY_TAG }}"
           echo "t="${{ env.MY_TAG }}
