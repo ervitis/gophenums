@@ -43,8 +43,8 @@ jobs:
     runs-on: ubuntu-latest
 
     outputs:
-      latest_tag: steps.set-tag.outputs.LATEST_TAG
-      new_version: steps.create-version.outputs.NEW_VERSION
+      latest_tag: ${{steps.set-tag.outputs.LATEST_TAG}}
+      new_version: ${{steps.create-version.outputs.NEW_VERSION}}
 
     steps:
 
