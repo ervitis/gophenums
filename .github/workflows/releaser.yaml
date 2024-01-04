@@ -35,7 +35,6 @@ jobs:
       config-file: .slsa-goreleaser.yml
       evaluated-envs: "VERSION:${{ needs.create-tag-and-release.outputs.new_version }}"
       upload-assets: true
-      upload-tag-name: true
 
   create-tag-and-release:
     permissions:
@@ -46,8 +45,8 @@ jobs:
     runs-on: ubuntu-latest
 
     outputs:
-      latest_tag: steps.latest_tag.outputs.LATEST_TAG
-      new_version: steps.new_version.outputs.NEW_VERSION
+      latest_tag: steps.latest_tag.outputs.latest_tag
+      new_version: steps.create_version.outputs.new_version
 
     steps:
 
@@ -60,32 +59,31 @@ jobs:
         run: |
           git fetch --tags
           latest_tag=$(git tag --sort=-creatordate | head -n 1)
-          echo "LATEST_TAG=$latest_tag" >> $GITHUB_OUTPUT
-          echo "$LATEST_TAG"
+          echo "latest_tag=$latest_tag" >> $GITHUB_OUTPUT
 
       - name: Determine New Version
-        id: new_version
+        id: create_version
         run: |
           case ${{ github.event.inputs.release_type }} in
           major)
-           new_version=$(echo "${{ steps.latest_tag.outputs.LATEST_TAG }}" | awk -F. '{printf "v%d.%d.%d\n", $1+1, 0, 0}')
+           new_version=$(echo "${{ steps.latest_tag.outputs.latest_tag }}" | awk -F. '{printf "v%d.%d.%d\n", $1+1, 0, 0}')
            ;;
           minor)
-           new_version=$(echo "${{ steps.latest_tag.outputs.LATEST_TAG }}" | awk -F. '{printf "v%d.%d.%d\n", $1, $2+1, 0}')
+           new_version=$(echo "${{ steps.latest_tag.outputs.latest_tag }}" | awk -F. '{printf "v%d.%d.%d\n", $1, $2+1, 0}')
            ;;
           patch)
-           new_version=$(echo "${{ steps.latest_tag.outputs.LATEST_TAG }}" | awk -F. '{printf "v%d.%d.%d\n", $1, $2, $3+1}')
+           new_version=$(echo "${{ steps.latest_tag.outputs.latest_tag }}" | awk -F. '{printf "v%d.%d.%d\n", $1, $2, $3+1}')
            ;;
           *)
            echo "Invalid release type specified."
            exit 1
            ;;
           esac
-          echo "NEW_VERSION=$new_version" >> $GITHUB_OUTPUT
+          echo "new_version=$new_version" >> $GITHUB_OUTPUT
 
       - name: Create Tag
         run: |
           git config user.email "${{ secrets.BOT_EMAIL }}"
           git config user.name "${{ secrets.BOT_NAME }}"
-          git tag -a "${{ steps.new_version.outputs.NEW_VERSION }}" -m "${{ github.event.inputs.tag_version_message }}"
-          git push origin "${{ steps.new_version.outputs.NEW_VERSION }}"
+          git tag -a "${{ steps.create_version.outputs.new_version }}" -m "${{ github.event.inputs.tag_version_message }}"
+          git push origin "${{ steps.create_version.outputs.new_version }}"
