@@ -110,7 +110,7 @@ jobs:
           echo $MY_VERSION
       - name: Test me 2
         env:
-          MY_TAG: ${{ needs.create-tag.outputs.LATEST_TAG }}
+          MY_TAG: ${{ jobs.create-tag.outputs.LATEST_TAG }}
         run: |
           echo "LATEST_TAG:$(echo '${{ needs.create-tag.outputs.latest_tag }}') and env:${{ env.MY_TAG }}"
           echo "t="${{ env.MY_TAG }}
