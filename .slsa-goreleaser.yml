@@ -25,3 +25,4 @@ binary: gophenums-{{ .Os }}-{{ .Arch }}-{{ .Env.VERSION }}
 
 ldflags:
   - "-s -w"
+  - "-X main.Version={{ .Env.VERSION }}"
