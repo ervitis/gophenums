@@ -11,7 +11,8 @@ tests: ## Execute tests
 	rm -f `pwd`/_tests/simple/test1_gen.go
 
 build: ## Build the application
-	go build -ldflags "-s -w" -o ./tmp/gophenums ./cmd/main.go
+	mkdir -p tmp && \
+	go build -ldflags "-s -w" -o ./tmp/gophenums ./cmd/gophenums/main.go
 
 format: ## Format files
 	go fmt ./...
