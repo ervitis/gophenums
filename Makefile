@@ -12,7 +12,7 @@ tests: ## Execute tests
 
 build: ## Build the application
 	mkdir -p tmp && \
-	go build -ldflags "-s -w" -o ./tmp/gophenums ./cmd/gophenums/main.go
+	go build -ldflags "-s -w" -o ./tmp/gophenums .
 
 format: ## Format files
 	go fmt ./...

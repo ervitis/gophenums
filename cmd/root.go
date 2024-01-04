@@ -1,4 +1,4 @@
-package main
+package cmd
 
 import (
 	"log/slog"
@@ -8,7 +8,7 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-func main() {
+func Execute() {
 	logger := slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelInfo}))
 	if err := (&cli.App{
 		Name:  "gophenums",
