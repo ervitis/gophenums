@@ -28,7 +28,7 @@ jobs:
     steps:
       - name: Test me
         run: |
-          echo NEW_VERSION=${{ needs.create-tag.outputs.new_version }}
+          echo NEW_VERSION="${{ needs.create-tag.outputs.new_version }}"
       - name: Test me 2
         env:
           MY_TAG: "LATEST_TAG:${{ needs.create-tag.outputs.latest_tag }}"
