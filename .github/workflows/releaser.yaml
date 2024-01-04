@@ -22,19 +22,6 @@ on:
 
 jobs:
 
-  test:
-    needs: create-tag
-    runs-on: ubuntu-latest
-    steps:
-      - name: Test me
-        run: |
-          MY_VERSION=$(echo ${{ needs.create-tag.outputs.new_version }})
-          echo $MY_VERSION
-      - name: Test me 2
-        env:
-          MY_TAG: "LATEST_TAG:${{ needs.create-tag.outputs.latest_tag }}"
-        run: echo "LATEST_TAG:$(echo '${{ needs.create-tag.outputs.latest_tag }}') and env:${{ env.MY_TAG }}"
-
   #releaser:
   #  permissions:
   #    id-token: write # To sign the provenance.
@@ -98,3 +85,16 @@ jobs:
           git config user.name "${{ secrets.BOT_NAME }}"
           git tag -a "${{ steps.create_version.outputs.new_version }}" -m "${{ github.event.inputs.tag_version_message }}"
           git push origin "${{ steps.create_version.outputs.new_version }}"
+
+  test:
+    needs: create-tag
+    runs-on: ubuntu-latest
+    steps:
+      - name: Test me
+        run: |
+          MY_VERSION=$(echo "${{ needs.create-tag.outputs.new_version }}")
+          echo $MY_VERSION
+      - name: Test me 2
+        env:
+          MY_TAG: "LATEST_TAG:${{ needs.create-tag.outputs.latest_tag }}"
+        run: echo "LATEST_TAG:$(echo '${{ needs.create-tag.outputs.latest_tag }}') and env:${{ env.MY_TAG }}"
