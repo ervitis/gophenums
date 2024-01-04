@@ -92,7 +92,7 @@ jobs:
     steps:
       - name: print outputs
         shell: bash
-        run: echo ${{ needs.create-tag.outputs }}
+        run: echo ${{ needs.create-tag.outputs['NEW_VERSION'] }}
       - name: Test me
         shell: bash
         run: |
