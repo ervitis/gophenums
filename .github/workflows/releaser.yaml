@@ -20,6 +20,12 @@ on:
           - minor
           - patch
 
+
+env:
+  LATEST_TAG: ""
+  NEW_VERSION: ""
+
+
 jobs:
 
   #releaser:
@@ -58,6 +64,7 @@ jobs:
           git fetch --tags
           latest_tag=$(git tag --sort=-creatordate | head -n 1)
           echo "latest_tag=$latest_tag" >> $GITHUB_OUTPUT
+          echo "latest_tag=$latest_tag" >> $GITHUB_ENV
 
       - name: Determine New Version
         id: create-version
@@ -78,6 +85,7 @@ jobs:
            ;;
           esac
           echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_OUTPUT
+          echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
 
       - name: Create Tag
         run: |
@@ -98,6 +106,7 @@ jobs:
         run: |
           MY_VERSION="${{ needs.create-tag.outputs.NEW_VERSION }}"
           echo "my version: ${{ needs.create-tag.outputs.NEW_VERSION }}"
+          echo "${{ env.NEW_VERSION }}"
           echo $MY_VERSION
       - name: Test me 2
         env:
