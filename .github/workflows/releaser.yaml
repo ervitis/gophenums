@@ -31,7 +31,7 @@ jobs:
       - create-tag-and-release
     uses: slsa-framework/slsa-github-generator/.github/workflows/builder_go_slsa3.yml@v1.9.0
     with:
-      go-version-file: ./go.mod
+      go-version-file: "go.mod"
       config-file: .slsa-goreleaser.yml
       evaluated-envs: "VERSION:${{ needs.create-tag-and-release.outputs.new_version }}"
       upload-assets: true
