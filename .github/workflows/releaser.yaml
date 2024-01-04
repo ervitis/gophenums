@@ -55,7 +55,7 @@ jobs:
       - name: Get latest tag
         id: set-tag
         env:
-          LATEST_TAG: ${{ steps.set-tag.outputs.latest_tag }}
+          LATEST_TAG: ${{ needs.set-tag.outputs.latest_tag }}
         run: |
           git fetch --tags
           latest_tag=$(git tag --sort=-creatordate | head -n 1)
