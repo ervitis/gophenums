@@ -28,11 +28,12 @@ jobs:
     steps:
       - name: Test me
         run: |
-          echo NEW_VERSION="${{ needs.create-tag.outputs.new_version }}"
+          MY_VERSION=$(echo "${{ needs.create-tag.outputs.new_version }}")
+          echo $MY_VERSION
       - name: Test me 2
         env:
           MY_TAG: "LATEST_TAG:${{ needs.create-tag.outputs.latest_tag }}"
-        run: echo "LATEST_TAG:${{ needs.create-tag.outputs.latest_tag }} and env:${{ env.MY_TAG }}"
+        run: echo "LATEST_TAG:$(echo '${{ needs.create-tag.outputs.latest_tag }}') and env:${{ env.MY_TAG }}"
 
   releaser:
     permissions:
