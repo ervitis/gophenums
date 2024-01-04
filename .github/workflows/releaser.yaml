@@ -55,7 +55,7 @@ jobs:
       - name: Get latest tag
         id: set-tag
         env:
-          LATEST_TAG: ${{ needs.set-tag.outputs.latest_tag }}
+          LATEST_TAG: ${{ steps.set-tag.outputs.latest_tag }}
         run: |
           git fetch --tags
           latest_tag=$(git tag --sort=-creatordate | head -n 1)
@@ -96,7 +96,9 @@ jobs:
           cat ${GITHUB_OUTPUT}
 
   test:
-    needs: create-tag
+    needs:
+      - set-tag
+      - create-version
     runs-on: ubuntu-latest
     steps:
       - name: print outputs
@@ -114,7 +116,7 @@ jobs:
           echo "ver: "${{ env.VER }}
       - name: Test me 2
         env:
-          MY_TAG: ${{ needs.set-tag.outputs.latest_tag }}
+          MY_TAG: ${{ needs.set-tag.outputs.LATEST_TAG }}
         run: |
           echo "LATEST_TAG:$(echo '${{ needs.set-tag.outputs.latest_tag }}') and env:${{ env.MY_TAG }}"
           echo "t="${{ env.MY_TAG }}
