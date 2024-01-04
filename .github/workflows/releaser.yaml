@@ -43,8 +43,8 @@ jobs:
     runs-on: ubuntu-latest
 
     outputs:
-      LATEST_TAG: steps.set-tag.outputs.LATEST_TAG
-      NEW_VERSION: steps.create-version.outputs.NEW_VERSION
+      latest_tag: steps.set-tag.outputs.LATEST_TAG
+      new_version: steps.create-version.outputs.NEW_VERSION
 
     steps:
 
@@ -55,12 +55,13 @@ jobs:
       - name: Get latest tag
         id: set-tag
         env:
-          LATEST_TAG: ${{ steps.set-tag.outputs.LATEST_TAG }}
+          LATEST_TAG: ${{ steps.set-tag.outputs.latest_tag }}
         run: |
           git fetch --tags
-          LATEST_TAG=$(git tag --sort=-creatordate | head -n 1)
-          echo "my: "$LATEST_TAG
-          echo "LATEST_TAG=${LATEST_TAG}" >> $GITHUB_OUTPUT
+          latest_tag=$(git tag --sort=-creatordate | head -n 1)
+          echo "my: "${latest_tag}
+          echo "LATEST_TAG=${latest_tag}" >> $GITHUB_OUTPUT
+          echo "my2: "${{ env.LATEST_TAG }}
 
       - name: Determine New Version
         id: create-version
@@ -110,7 +111,7 @@ jobs:
           echo $MY_VERSION
       - name: Test me 2
         env:
-          MY_TAG: ${{ jobs.create-tag.outputs.LATEST_TAG }}
+          MY_TAG: ${{ needs.create-tag.outputs.LATEST_TAG }}
         run: |
           echo "LATEST_TAG:$(echo '${{ needs.create-tag.outputs.latest_tag }}') and env:${{ env.MY_TAG }}"
           echo "t="${{ env.MY_TAG }}
