@@ -34,6 +34,8 @@ const (
 > [!WARNING]  
 > The type and the name of the type in the comment has to be the same or it won't work
 
+You can see some examples in the folder `_examples`
+
 ## Running the tests
 
 ```bash
