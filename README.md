@@ -14,7 +14,25 @@ Requirements for the software and other tools to build, test and push
 
 You can use the generator like this:
 
-[WIP]
+```bash
+go get github.com/ervitis/gophenums
+```
+
+Then let's create a file with the types and constants. And add the comment associated to the type.
+
+```go
+// gophenum:generate color
+type color string
+
+const (
+	Blue   color = "blue"
+	Yellow color = "yellow"
+	Red    color = "red"
+)
+```
+
+> [!WARNING]  
+> The type and the name of the type in the comment has to be the same or it won't work
 
 ## Running the tests
 
