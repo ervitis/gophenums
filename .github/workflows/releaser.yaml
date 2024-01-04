@@ -105,10 +105,12 @@ jobs:
         shell: bash
         run: |
           MY_VERSION="${{ needs.create-tag.outputs.NEW_VERSION }}"
-          echo "my version: ${{ needs.create-tag.outputs.NEW_VERSION }}"
+          echo "my version: ${{ jobs.create-tag.outputs.NEW_VERSION }}"
           echo "${{ env.NEW_VERSION }}"
           echo $MY_VERSION
       - name: Test me 2
         env:
-          MY_TAG: "LATEST_TAG:${{ needs.create-tag.outputs.latest_tag }}"
-        run: echo "LATEST_TAG:$(echo '${{ needs.create-tag.outputs.latest_tag }}') and env:${{ env.MY_TAG }}"
+          MY_TAG: "LATEST_TAG:${{ needs.create-tag.outputs.LATEST_TAG }}"
+        run: |
+          echo "LATEST_TAG:$(echo '${{ needs.create-tag.outputs.latest_tag }}') and env:${{ env.MY_TAG }}"
+          echo "t="${{ env.MY_TAG }}
