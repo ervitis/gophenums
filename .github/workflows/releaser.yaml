@@ -40,9 +40,7 @@ jobs:
         run: |
           git fetch --tags
           latest_tag=$(git tag --sort=-creatordate | head -n 1)
-          echo "my: "${latest_tag}
           echo "LATEST_TAG=${latest_tag}" >> $GITHUB_OUTPUT
-          echo "my2: "${{ env.LATEST_TAG }}
 
       - name: Determine New Version
         id: create-version
